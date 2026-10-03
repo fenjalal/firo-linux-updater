@@ -1,31 +1,32 @@
-# Firo Linux Updater
+# Firo Binary Updater
 
-Updates `firod`, `firo-cli`, `firo-qt` and `firo-tx` to an official Firo release.
-It does not touch your wallet or `~/.firo` data.
+Updates `firod`, `firo-cli`, `firo-tx` and `firo-qt` to an official Firo release.
+It never touches your wallet or `~/.firo` data.
 
 ## Requirements
 
 - Linux x86_64 or aarch64 with glibc 2.30 or newer
-- `curl`, `tar`, `sha256sum`, `sudo`
+- `curl`, `tar`, `gpg`, `sha256sum`, `sudo`
 
-## Quick start
+## Usage
 
 ```bash
-git clone https://github.com/fenjalal/firo-updater.git
-cd firo-updater
+git clone https://github.com/fenjalal/firo-linux-updater.git
+cd firo-linux-updater
 chmod +x update-firo.sh
-./update-firo.sh 0.14.18.1
+
+./update-firo.sh latest                      # newest official release
+./update-firo.sh 0.14.18.1                   # a specific version
+./update-firo.sh 0.14.18.1 --daemon-only     # skip firo-qt (servers)
 ```
 
-Replace `0.14.18.1` with the version you want.
+## What it checks
 
-## What it does
+1. The release signature (`SHA256SUMS`) against the Firo release key pinned in `keys/reuben.asc`, fingerprint `0186 454D 63E8 3D85 EF91 DE4E 1290 A1D0 FA7E E109`.
+2. The SHA256 of the tarball.
+3. The version reported by the new `firod`.
 
-1. Downloads the release tarball from github.com/firoorg/firo.
-2. Verifies it against the official `SHA256SUMS`.
-3. Extracts it to a temporary folder.
-4. Stops `firod` if it is running.
-5. Copies the four binaries to `/usr/local/bin`.
+If the installed binary fails the version check, the previous binaries are restored automatically.
 
 ## Start after the update
 
@@ -39,3 +40,4 @@ firo-qt            # opens the wallet
 
 - Tested on Kali Linux only.
 - Needs `sudo` to write to `/usr/local/bin`.
+- The script stops a running `firod` and does not start it again.
